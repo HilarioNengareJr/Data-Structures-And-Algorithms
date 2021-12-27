@@ -1,75 +1,130 @@
-/* C++ implementation to convert
-infix expression to postfix*/
+// C program to convert infix expression to postfix
+#include <stdio.h>
 
-#include<stdio.h>
+#include <string.h>
 
-using namespace std;
+#include <stdlib.h>
 
-//Function to return precedence of operators
-int prec(char c) {
-        if (c == '^')
-                return 3;
-        else if (c == '/' || c == '*')
-                return 2;
-        else if (c == '+' || c == '-')
-                return 1;
-        else
-                return -1;
+// Stack type
+struct Stack {
+        int top;
+        unsigned capacity;
+        int * array;
+};
+
+// Stack Operations
+struct Stack * createStack(unsigned capacity) {
+        struct Stack * stack = (struct Stack * )
+        malloc(sizeof(struct Stack));
+
+        if (!stack)
+                return NULL;
+
+        stack -> top = -1;
+        stack -> capacity = capacity;
+
+        stack -> array = (int * ) malloc(stack -> capacity *
+                sizeof(int));
+
+        return stack;
+}
+int isEmpty(struct Stack * stack) {
+        return stack -> top == -1;
+}
+char peek(struct Stack * stack) {
+        return stack -> array[stack -> top];
+}
+char pop(struct Stack * stack) {
+        if (!isEmpty(stack))
+                return stack -> array[stack -> top--];
+        return '$';
+}
+void push(struct Stack * stack, char op) {
+        stack -> array[++stack -> top] = op;
 }
 
-// The main function to convert infix expression
-//to postfix expression
-void infixToPostfix(string s) {
+// A utility function to check if
+// the given character is operand
+int isOperand(char ch) {
+        return (ch >= 'a' && ch <= 'z') ||
+                (ch >= 'A' && ch <= 'Z');
+}
 
-        stack < char > st; //For stack operations, we are using C++ built in stack
-        string result;
+// A utility function to return
+// precedence of a given operator
+// Higher returned value means
+// higher precedence
+int Prec(char ch) {
+        switch (ch) {
+        case '+':
+        case '-':
+                return 1;
 
-        for (int i = 0; i < s.length(); i++) {
-                char c = s[i];
+        case '*':
+        case '/':
+                return 2;
+
+        case '^':
+                return 3;
+        }
+        return -1;
+}
+
+// The main function that
+// converts given infix expression
+// to postfix expression.
+int infixToPostfix(char * exp) {
+        int i, k;
+
+        // Create a stack of capacity
+        // equal to expression size
+        struct Stack * stack = createStack(strlen(exp));
+        if (!stack) // See if stack was created successfully
+                return -1;
+
+        for (i = 0, k = -1; exp[i]; ++i) {
 
                 // If the scanned character is
-                // an operand, add it to output string.
-                if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'))
-                        result += c;
+                // an operand, add it to output.
+                if (isOperand(exp[i]))
+                        exp[++k] = exp[i];
 
                 // If the scanned character is an
                 // ‘(‘, push it to the stack.
-                else if (c == '(')
-                        st.push('(');
+                else if (exp[i] == '(')
+                        push(stack, exp[i]);
 
                 // If the scanned character is an ‘)’,
-                // pop and to output string from the stack
+                // pop and output from the stack
                 // until an ‘(‘ is encountered.
-                else if (c == ')') {
-                        while (st.top() != '(') {
-                                result += st.top();
-                                st.pop();
-                        }
-                        st.pop();
+                else if (exp[i] == ')') {
+                        while (!isEmpty(stack) && peek(stack) != '(')
+                                exp[++k] = pop(stack);
+                        if (!isEmpty(stack) && peek(stack) != '(')
+                                return -1; // invalid expression            
+                        else
+                                pop(stack);
+                } else // an operator is encountered
+                {
+                        while (!isEmpty(stack) &&
+                                Prec(exp[i]) <= Prec(peek(stack)))
+                                exp[++k] = pop(stack);
+                        push(stack, exp[i]);
                 }
 
-                //If an operator is scanned
-                else {
-                        while (!st.empty() && prec(s[i]) <= prec(st.top())) {
-                                result += st.top();
-                                st.pop();
-                        }
-                        st.push(c);
-                }
         }
 
-        // Pop all the remaining elements from the stack
-        while (!st.empty()) {
-                result += st.top();
-                st.pop();
-        }
+        // pop all the operators from the stack
+        while (!isEmpty(stack))
+                exp[++k] = pop(stack);
 
-        cout << result << endl;
+        exp[++k] = '\0';
+        printf("%s", exp);
 }
 
-//Driver program to test above functions
+// Driver program to test above functions
 int main() {
-        string exp = "a+b*(c^d-e)^(f+g*h)-i";
+        char exp[] = "a+b*(c^d-e)^(f+g*h)-i";
         infixToPostfix(exp);
         return 0;
 }
