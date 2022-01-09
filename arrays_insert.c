@@ -1,5 +1,5 @@
 /*
- * Program  : ARRAYS
+ * Program  : Static Allocated ARRAYS in stack
  * Language : C
  * Note: Are arrays mutable in C? From Google,
  
