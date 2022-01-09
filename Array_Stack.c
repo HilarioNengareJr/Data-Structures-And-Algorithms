@@ -13,12 +13,13 @@
   int isStackFull() {
           if (top == size - 1)
                   return 1;
-          return 0;
+          else
+                  return 0;
   }
 
   void push(int val) {
           //check if the stack is full
-          if (isStackFull())
+          if (isStackFull()==1)
                   printf("Unable to push %d as the Stack Is Full\n", val);
           else {
                   //increment top by 1 
@@ -32,12 +33,13 @@
   int isStackEmpty() {
           if (top == -1)
                   return 1;
-          return 0;
+          else
+                  return 0;
   }
 
   void pop() {
           //check if the stack is empty
-          if (isStackEmpty())
+          if (isStackEmpty()==1)
                   printf("Stack Is Empty\n");
           else {
                   //print the popped element
