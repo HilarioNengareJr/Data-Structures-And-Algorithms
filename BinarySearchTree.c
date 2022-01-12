@@ -53,18 +53,19 @@ struct node * insert(struct node * root, int val) {
         return root;
 }
 
-bool search(Node * root, int x) {
-        if (root == NULL) {
-                return false;
-        } else if (x < root -> key) {
-                return search(root -> left, x);
-        } else if (x > root -> key) {
+Node * search(Node * root, int x) {
+        while (root != NULL) {
+                if (root -> key == x) {
+                        printf("Root is Equivalent to %i", x);
+                        return root;
+                } else if (root -> key > x) {
+                        printf("Found in the Left Subtree!");
+                        return search(root -> left, x);
+                } else
+                        printf("Found in the Right Subtree");
                 return search(root -> right, x);
-        } else // root->key == x
-        {
-                return true;
         }
-
+        return NULL;
 }
 
 struct node * removeNode(struct node * root, int val) {
